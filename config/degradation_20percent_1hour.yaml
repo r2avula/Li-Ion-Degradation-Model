@@ -1,0 +1,25 @@
+slotIntervalInSeconds: 3600
+
+paramsPrecisionDigits: 15
+
+powerQuantPU: 100
+batteryNominalVoltage: 48
+converterRatedPower: inf
+converterEfficiency: 95
+
+cell_SOC_high: 0.9
+cell_SOC_low: 0.1
+cell_SOC_init: 0.5
+cell_voltage_high: 4.2
+cell_voltage_low: 2.5
+cell_Cfactor_max_ch: 1
+cell_Cfactor_max_disch: 1
+cell_1C_capacityInAh: 1.8048
+cell_nominalVoltage: 4
+degSampleNum: 40
+allowedRelativeCapacityChange: 20
+deglifePartitions_num: 3
+driveToSOH_timeAccelerationFactor: 100
+driveToSOC_timeAccelerationFactor: 1
+driveToSOC_timePeriodScaleFactor: 1
+driveToSOC_attempts_max: 10

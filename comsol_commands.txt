@@ -1,0 +1,48 @@
+ALLOWING EXTERNAL PROCESSES IN THE COMMAND LINE
+---Add the flag -allowexternalmatlab on to the COMSOL start-up command to enable external processes.
+
+ACTIVATING THE PROGRESS BAR
+---By default no progress information is displayed while running COMSOL with MATLAB. 
+---To manually enable a progress bar and visualize the progress of operations, enter the command: 
+ModelUtil.showProgress(true)
+
+THE MODEL HISTORY
+---The model history is automatically enabled when the model is created in the COMSOL Desktop. 
+---It is however possible to manually disable the model history recording from the MATLAB prompt with the command: 
+model.hist.disable
+---The functions mphload and mphopen automatically disable model history when loading a model.
+
+COMPACTING THE MODEL HISTORY
+---To compact the model history in the COMSOL Desktop, from File menu, select Compact History ().
+---To compact the model history at the MATLAB prompt enter the command: model.resetHist
+
+LOADING A MODEL AT THE MATLAB PROMPT
+---If you do not want to update the recent opened file list with the model you are about to open, use the -nostore flag with the function mphopen as in the command below:
+model = mphopen(<filename>, <ModelTag>, '-nostore')
+
+DISABLING MODEL FEATURE UPDATE
+---Every time a setting in changed in a model COMSOL Multiphysics automatically checks the settings for that particular feature and updates any other feature
+that may depend on the new setting. 
+---To disable the feature model update enter the command:
+model.disableUpdates(true)
+---You have to enable the feature update again prior to computing the solution in order to make sure that COMSOL works on an updated model definition. 
+---To enable the feature model update, enter the command:
+model.disableUpdates(false)
+
+STARTING COMSOL MULTIPHYSICS SERVER ON LINUX
+---In a system terminal prompt start a COMSOL Multiphysics server with the command:
+comsol mphserver
+
+CONNECTING MATLAB TO THE COMSOL MULTIPHYSICS SERVER ON LINUX
+---In MATLAB, add the path of the COMSOL5.4a/mli directory. 
+---Enter this command at the MATLAB prompt:
+mphstart
+---Once MATLAB and the COMSOL server are manually connected, import the COMSOL class by entering the following command:
+import com.comsol.model.util.*
+---To disconnect MATLAB and the COMSOL server, run this command at the MATLAB prompt:
+ModelUtil.disconnect;
+
+SWITCH OFF SAVING OF RECOVERY FILES
+---In a command window, execute
+/opt/comsol/5.4/bin/comsol server -autosave 'off'
+/opt/comsol/5.4/bin/comsol mphserver -tmpdir $TMPDIR$ -recoverydir $RECDIR$ -autosave 'off'
