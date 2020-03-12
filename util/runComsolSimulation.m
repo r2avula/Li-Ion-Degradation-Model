@@ -14,6 +14,8 @@ soc_k_samples_at_load = Inf([soc_num,pow_num,sample_num]);
 soc_kp1_samples_at_load = Inf([soc_num,pow_num,sample_num]);
 soc_k_samples_coulombic= Inf([soc_num,pow_num,sample_num]);
 soc_kp1_samples_coulombic = Inf([soc_num,pow_num,sample_num]);
+soc_k_samples_3c= Inf([soc_num,pow_num,sample_num]);
+soc_kp1_samples_3c = Inf([soc_num,pow_num,sample_num]);
 simTimeRatio_samples = Inf([soc_num,pow_num,sample_num]);
 terminal_voltage_samples = Inf([soc_num,pow_num,sample_num]);
 internal_resistance_samples = Inf([soc_num,pow_num,sample_num]);
@@ -112,6 +114,9 @@ while(~mapFilled)
             else
                 attempts_to_driveToSOC = attempts_to_driveToSOC + attempts;
             end
+%             if(attempts>cellSimParams.driveToSOC_attempts_max)
+%                 keyboard
+%             end
         end
         soc_k_bin_idx = des_soc_bin_idx;
         changed_flag = 1;
@@ -121,6 +126,7 @@ while(~mapFilled)
     attempts_to_driveToSOC_samples(soc_k_bin_idx,ref_pow_idx,sample_idx) = attempts_to_driveToSOC;
     soc_k_samples_at_load(soc_k_bin_idx,ref_pow_idx,sample_idx) = cellSimParams.cur_soc_at_load;
     soc_k_samples_coulombic(soc_k_bin_idx,ref_pow_idx,sample_idx) = cellSimParams.cur_soc_coulombic;
+    soc_k_samples_3c(soc_k_bin_idx,ref_pow_idx,sample_idx) = cellSimParams.cur_soc_3c;
     
     out = simulateBatteryCell(cellSimParams,ref_pow_idx,0);    
     
@@ -134,15 +140,16 @@ while(~mapFilled)
         simTimeRatio_samples(soc_k_bin_idx,ref_pow_idx,sample_idx) = simTimeRatio;
         internal_resistance_samples(soc_k_bin_idx,ref_pow_idx,sample_idx) = out.mean_internal_resistance;
         terminal_voltage_samples(soc_k_bin_idx,ref_pow_idx,sample_idx) = out.mean_terminal_voltage;
-        energy_applied_samples(soc_k_bin_idx,ref_pow_idx,sample_idx) = out.energy_applied;
+        energy_applied_samples(soc_k_bin_idx,ref_pow_idx,sample_idx) = out.energy_applied;        
         
-        soc_kp1 = cellSimParams.cur_soc;
-        soc_kp1_bin_idx = find(soc_grid_boundaries(2:end-1)>soc_kp1,1);
+        soc_kp1_samples_at_load(soc_k_bin_idx,ref_pow_idx,sample_idx) = cellSimParams.cur_soc_at_load;
+        soc_kp1_samples_coulombic(soc_k_bin_idx,ref_pow_idx,sample_idx) = cellSimParams.cur_soc_coulombic;
+        soc_kp1_samples_3c(soc_k_bin_idx,ref_pow_idx,sample_idx) = cellSimParams.cur_soc_3c;
+        
+        soc_kp1_bin_idx = find(soc_grid_boundaries(2:end-1)>cellSimParams.cur_soc_3c,1);
         if(isempty(soc_kp1_bin_idx))
             soc_kp1_bin_idx = soc_num;
         end
-        soc_kp1_samples_at_load(soc_k_bin_idx,ref_pow_idx,sample_idx) = cellSimParams.cur_soc_at_load;
-        soc_kp1_samples_coulombic(soc_k_bin_idx,ref_pow_idx,sample_idx) = cellSimParams.cur_soc_coulombic;
         soc_k_bin_idx = soc_kp1_bin_idx;
         
         validData = 1;
@@ -154,6 +161,7 @@ while(~mapFilled)
         capacity_loss_factor_samples(soc_k_bin_idx,ref_pow_idx,sample_idx) = nan;
         soc_kp1_samples_at_load(soc_k_bin_idx,ref_pow_idx,sample_idx) = nan;
         soc_kp1_samples_coulombic(soc_k_bin_idx,ref_pow_idx,sample_idx) = nan;
+        soc_kp1_samples_3c(soc_k_bin_idx,ref_pow_idx,sample_idx) = nan;
         internal_resistance_samples(soc_k_bin_idx,ref_pow_idx,sample_idx) = nan;
         terminal_voltage_samples(soc_k_bin_idx,ref_pow_idx,sample_idx) = nan;
         map_fill_count = map_fill_count + 1;
@@ -174,8 +182,10 @@ cellSimData.energy_applied_samples = energy_applied_samples;
 cellSimData.capacity_loss_factor_samples = capacity_loss_factor_samples;
 cellSimData.soc_k_samples_at_load = soc_k_samples_at_load;
 cellSimData.soc_k_samples_coulombic = soc_k_samples_coulombic;
+cellSimData.soc_k_samples_3c = soc_k_samples_3c;
 cellSimData.soc_kp1_samples_at_load = soc_kp1_samples_at_load;
 cellSimData.soc_kp1_samples_coulombic = soc_kp1_samples_coulombic;
+cellSimData.soc_kp1_samples_3c = soc_kp1_samples_3c;
 cellSimData.internal_resistance_samples = internal_resistance_samples;
 cellSimData.terminal_voltage_samples = terminal_voltage_samples;
 cellSimData.attempts_to_driveToSOC_samples = attempts_to_driveToSOC_samples;

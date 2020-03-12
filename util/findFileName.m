@@ -17,7 +17,7 @@ while(~fileExists && file_idx>1)
     variableInfo = who('-file', filename);
     if ismember(paramName, variableInfo)
         out = load(filename,paramName);
-        if(isfield(out,paramName) && isequal(params,out.(paramName)))
+        if(isfield(out,paramName) && isequaln(params,out.(paramName)))
             fileExists = 1;
         end
     end

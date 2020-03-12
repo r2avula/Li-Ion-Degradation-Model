@@ -30,11 +30,14 @@ model.study('std2').feature('time1').set('initstudy', 'std2'); % for COMSOL v5.4
 
 cellSimParams.cur_voltage = mphglobal(model,'Ecell','dataset','dset2','solnum','end');
 cellSimParams.model = model;
-cellSimParams.cur_soc = mphglobal(model,'SOCcell_load','dataset','dset2','solnum','end');
+cur_soc_at_load = mphglobal(model,'SOCcell_load','dataset','dset2','solnum','end');
+cur_soc_coulombic = mphglobal(model,'SOCcell','dataset','dset2','solnum','end');
+cur_soc_3c = cur_soc_coulombic;
+cellSimParams.cur_soc_at_load = cur_soc_at_load;
+cellSimParams.cur_soc_coulombic = cur_soc_coulombic;
+cellSimParams.cur_soc_3c = cur_soc_3c;
 cellSimParams.cellsIterated = cellSimParams.cellsIterated + 1;
 cellSimParams.currentCellRelativeCapacity = 100;
-
-
 desCellRelativeCapacity = cellSimParams.initialRelCap;
 [cellSimParams] = driveToRelCap(cellSimParams,desCellRelativeCapacity);
 end

@@ -5,7 +5,7 @@ soc_num = length(soc_grid_boundaries)-1;
 cell_pow_set = cellSimParams.cell_pow_set;
 pow_num = length(cell_pow_set);
 
-cur_soc = cellSimParams.cur_soc;
+cur_soc = cellSimParams.cur_soc_coulombic; % Cheating a bit here
 cur_soc_bin_idx = find(soc_grid_boundaries(2:end-1)>cur_soc,1);
 if(isempty(cur_soc_bin_idx))
     cur_soc_bin_idx = soc_num;
@@ -13,6 +13,7 @@ end
 
 if(cur_soc_bin_idx == des_soc_bin_idx)
     desired_state_reached = 1;
+    cellSimParams.cur_soc_3c = cur_soc;        
 else
     desired_state_reached = 0;
 end
@@ -22,12 +23,13 @@ des_SOC_high = soc_grid_boundaries(des_soc_bin_idx+1);
 des_SOC = (des_SOC_low + des_SOC_high)/2;
 model.param.set('des_SOC',des_SOC);
 
+cell_reset = 0;
 charging_set = 0;
 discharging_set = 0;
 attempts = 0;
 attempts_max = cellSimParams.driveToSOC_attempts_max;
 cycles = 0;
-timePeriodScale = 0.8;
+timePeriodScale = cellSimParams.driveToSOC_timePeriodScaleFactor;
 timePeriod = (timePeriodScale^cycles)*cellSimParams.slotIntervalInSeconds*cellSimParams.driveToSOC_timeAccelerationFactor;
 model.param.set('period',timePeriod);
 model.param.set('t_factor',cellSimParams.driveToSOC_timeAccelerationFactor);
@@ -73,12 +75,12 @@ while(~desired_state_reached)
         end
     end
     
-    [out,cell_reset] = simulateBatteryCell(cellSimParams,ref_pow_idx,1);
+    [out,cell_reset] = simulateBatteryCell(cellSimParams,ref_pow_idx,0);
     if(cell_reset)
         attempts = 1;
     end
     cellSimParams = out.cellSimParams;
-    cur_soc = cellSimParams.cur_soc;
+    cur_soc = cellSimParams.cur_soc_coulombic; % Cheating a bit here
     cur_soc_bin_idx = find(soc_grid_boundaries(2:end-1)>cur_soc,1);
     if(isempty(cur_soc_bin_idx))
         cur_soc_bin_idx = soc_num;
@@ -86,9 +88,11 @@ while(~desired_state_reached)
     
     if(cur_soc_bin_idx == des_soc_bin_idx)
         desired_state_reached = 1;
+        cellSimParams.cur_soc_3c = cur_soc;
     elseif(cell_pow_set(ref_pow_idx)~=0)
         attempts = attempts + 1;
         if(attempts>attempts_max)
+            cellSimParams.cur_soc_3c = cur_soc;
             break;
         end
     end

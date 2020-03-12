@@ -12,7 +12,7 @@ else
     model.param.set('period',cellSimParams.slotIntervalInSeconds*cellSimParams.driveToSOH_timeAccelerationFactor);
     model.param.set('t_factor',cellSimParams.driveToSOH_timeAccelerationFactor);
     
-    soc_k = cellSimParams.cur_soc;
+    soc_k = cellSimParams.cur_soc_3c;
     soc_grid_boundaries = cellSimParams.soc_grid_boundaries;
     soc_num = length(soc_grid_boundaries)-1;
     soc_k_bin_idx = find(soc_grid_boundaries(2:end-1)>soc_k,1);
@@ -46,6 +46,13 @@ while(~desired_state_reached)
         desired_state_reached = 1;
     else
         desired_state_reached = 0;
+        soc_k = cellSimParams.cur_soc_3c;
+        soc_grid_boundaries = cellSimParams.soc_grid_boundaries;
+        soc_num = length(soc_grid_boundaries)-1;
+        soc_k_bin_idx = find(soc_grid_boundaries(2:end-1)>soc_k,1);
+        if(isempty(soc_k_bin_idx))
+            soc_k_bin_idx = soc_num;
+        end
     end
 end
 model.param.set('period',cellSimParams.slotIntervalInSeconds);
